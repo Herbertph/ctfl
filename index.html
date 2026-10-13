@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Digital answer sheet for the official ISTQB CTFL v4.0 Sample Exams A-D, with a 75-minute timer and a per-chapter mistake report.">
+<title>CTFL v4.0 Sample Exams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: an optical answer sheet. Form header and boxed facts, then a bubble sheet with a
+   timing-mark track and 5-row bands (two columns on wide screens), then a graded report. */
+:root{
+  --paper:#edf1f5;
+  --sheet:#ffffff;
+  --ink:#17202b;
+  --muted:#556272;
+  --dropout:#1d6ab0;
+  --dropout-soft:#d7e6f4;
+  --band:#f2f7fc;
+  --rule:#c7d7e7;
+  --graphite:#252a31;
+  --on-graphite:#ffffff;
+  --ok:#17784b;
+  --ok-soft:#dcf1e5;
+  --bad:#bf3626;
+  --bad-soft:#f9e1dc;
+  --warn:#9c6206;
+  --warn-soft:#f8ecd3;
+  --scrim:rgba(8,12,18,.55);
+  --f-display:"Archivo Narrow","Arial Narrow","Roboto Condensed",Arial,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e131a; --sheet:#161d27; --ink:#e6ecf3; --muted:#9caabb;
+    --dropout:#72b0ea; --dropout-soft:#1c3045; --band:#1a2431; --rule:#2a3a4d;
+    --graphite:#e8ecf1; --on-graphite:#10151c;
+    --ok:#52c590; --ok-soft:#163427; --bad:#f17d6c; --bad-soft:#3b201b;
+    --warn:#e2a94b; --warn-soft:#3a2c13; --scrim:rgba(0,0,0,.65);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e131a; --sheet:#161d27; --ink:#e6ecf3; --muted:#9caabb;
+  --dropout:#72b0ea; --dropout-soft:#1c3045; --band:#1a2431; --rule:#2a3a4d;
+  --graphite:#e8ecf1; --on-graphite:#10151c;
+  --ok:#52c590; --ok-soft:#163427; --bad:#f17d6c; --bad-soft:#3b201b;
+  --warn:#e2a94b; --warn-soft:#3a2c13; --scrim:rgba(0,0,0,.65);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+a{color:var(--dropout)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--dropout);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+.wrap{max-width:1080px;margin-inline:auto;padding-inline:16px;padding-block:20px 72px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.eyebrow{font-family:var(--f-display);font-weight:600;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dropout)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2.1rem,6vw,3.4rem);line-height:1.02;letter-spacing:-.005em;margin:14px 0 10px;text-wrap:balance}
+.lede{max-width:62ch;color:var(--muted);font-size:1.08rem;margin:0}
+.sh{display:flex;align-items:center;gap:12px;margin:36px 0 14px;color:var(--dropout)}
+.sh h2{font-family:var(--f-display);font-weight:700;font-size:.95rem;letter-spacing:.12em;text-transform:uppercase;margin:0;white-space:nowrap}
+.sh::after{content:"";flex:1;border-top:1.5px solid var(--dropout)}
+
+/* boxed facts, like the header fields of a printed form */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1.5px solid var(--dropout);border-radius:6px;background:var(--sheet);margin-top:22px}
+.fact{padding:12px 16px;border-left:1.5px solid var(--dropout);min-width:0}
+.fact:first-child{border-left:0}
+.lbl{font-family:var(--f-display);font-weight:600;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dropout)}
+.fact .v{font-family:var(--f-mono);font-weight:600;font-size:1.35rem;line-height:1.3}
+.fact .note{font-size:.84rem;color:var(--muted)}
+@media (max-width:600px){
+  .facts{grid-template-columns:1fr}
+  .fact{border-left:0;border-top:1.5px solid var(--dropout)}
+  .fact:first-child{border-top:0}
+}
+
+.resume{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;background:var(--warn-soft);border:1.5px solid var(--warn);border-radius:8px;padding:12px 16px;margin-top:20px}
+.resume p{margin:0;font-weight:600}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+
+.exams{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:560px){.exams{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:960px){.exams{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.card{background:var(--sheet);border:1.5px solid var(--rule);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card-h{display:flex;gap:12px;align-items:center}
+.letter{flex:none;width:54px;height:54px;border:2px solid var(--dropout);border-radius:6px;display:grid;place-items:center;font-family:var(--f-mono);font-weight:600;font-size:1.9rem;line-height:1;color:var(--dropout)}
+.card-t{font-family:var(--f-display);font-weight:700;font-size:1.2rem;line-height:1.2}
+.card-v{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.hist{font-size:.9rem;color:var(--muted);min-height:2.7em}
+.hist .s{font-family:var(--f-mono);font-weight:600}
+.hist .s.pass{color:var(--ok)}
+.hist .s.fail{color:var(--bad)}
+.card .stack{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 16px;border-radius:6px;border:1.5px solid var(--dropout);background:transparent;color:var(--dropout);font-weight:600;line-height:1.2;text-decoration:none;cursor:pointer;text-align:center}
+.btn:hover{background:var(--dropout-soft)}
+.btn.primary{background:var(--dropout);color:var(--sheet)}
+.btn.primary:hover{filter:brightness(1.08);background:var(--dropout)}
+.btn.quiet{border-color:transparent;color:var(--muted)}
+.btn.quiet:hover{background:transparent;color:var(--ink);text-decoration:underline}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.danger:hover{background:var(--bad-soft)}
+
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:780px){.steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.steps li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start}
+.steps .n{width:32px;height:32px;border-radius:50%;background:var(--graphite);color:var(--on-graphite);display:grid;place-items:center;font-family:var(--f-mono);font-weight:600;font-size:.9rem}
+.steps p{margin:4px 0 0;max-width:46ch}
+
+.foot{margin-top:44px;padding-top:16px;border-top:1.5px dashed var(--rule);font-size:.85rem;color:var(--muted);display:grid;gap:6px}
+.foot p{margin:0;max-width:90ch}
+
+/* exam view */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--sheet);border-bottom:1.5px solid var(--dropout)}
+.bar-in{max-width:1080px;margin-inline:auto;padding:10px 16px;display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap}
+.bar .letter{width:42px;height:42px;font-size:1.4rem}
+.meter{display:flex;flex-direction:column;line-height:1.15}
+.meter .v{font-family:var(--f-mono);font-weight:600;font-variant-numeric:tabular-nums}
+.clock .v{font-size:1.6rem}
+.clock.warn .v{color:var(--warn)}
+.clock.crit .v{color:var(--bad)}
+.count .v{font-size:1.15rem}
+.bar .sp{flex:1}
+.bar .btn{min-height:40px;padding:6px 14px}
+.prog{height:4px;background:var(--dropout-soft)}
+.prog i{display:block;height:100%;width:0;background:var(--dropout);transition:width .2s}
+@media (max-width:480px){.bar .letter{display:none}.bar-in{gap:8px 14px}}
+
+.sheet-h{display:flex;justify-content:space-between;align-items:flex-end;gap:8px 16px;flex-wrap:wrap;margin-top:22px}
+.sheet-h .title{font-family:var(--f-display);font-weight:700;font-size:1.35rem}
+.sheet-h .hint{font-size:.88rem;color:var(--muted);max-width:52ch;margin:0}
+.sheet{--cols:10px 38px minmax(0,1fr) 36px;background:var(--sheet);border:1.5px solid var(--dropout);border-radius:6px;margin-top:12px;display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden}
+@media (min-width:900px){
+  .sheet{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .col + .col{border-left:1.5px solid var(--dropout)}
+}
+@media (max-width:899px){.col + .col .colh{border-top:1.5px solid var(--dropout)}}
+.colh{display:grid;grid-template-columns:var(--cols);gap:10px;padding:8px 12px 8px 0;border-bottom:1.5px solid var(--dropout);font-family:var(--f-display);font-weight:600;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dropout)}
+.colh span:last-child{text-align:center}
+.row{display:grid;grid-template-columns:var(--cols);gap:10px;align-items:center;padding:7px 12px 7px 0;border-top:1px solid var(--rule);scroll-margin-top:120px}
+.colh + .row{border-top:0}
+.row.band{background:var(--band)}
+.tm{width:10px;height:7px;background:var(--ink)}
+.qn{font-family:var(--f-mono);font-weight:600;color:var(--dropout);font-variant-numeric:tabular-nums}
+.row.flagged .qn{color:var(--warn)}
+.bubs{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;min-width:0}
+.bub{width:34px;height:34px;padding:0;border-radius:50%;border:1.5px solid var(--dropout);background:var(--sheet);color:var(--dropout);font-family:var(--f-mono);font-weight:600;font-size:.8rem;text-transform:uppercase;cursor:pointer;display:grid;place-items:center;transition:background .12s,color .12s}
+.bub:hover{background:var(--dropout-soft)}
+.bub[aria-pressed="true"]{background:var(--graphite);border-color:var(--graphite);color:var(--on-graphite)}
+.tag{flex-basis:100%;font-family:var(--f-display);font-weight:600;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dropout)}
+.tag.err{color:var(--bad)}
+.flag{width:34px;height:34px;padding:0;border:1.5px solid var(--rule);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;justify-self:center}
+.flag:hover{border-color:var(--warn);color:var(--warn)}
+.flag[aria-pressed="true"]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.flag[aria-pressed="true"] path{fill:currentColor}
+.after{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-top:18px}
+.after p{margin:0;font-size:.88rem;color:var(--muted);max-width:56ch}
+
+/* modal */
+.ov{position:fixed;inset:0;z-index:20;background:var(--scrim);display:grid;place-items:center;padding:16px}
+.modal{width:100%;max-width:440px;background:var(--sheet);color:var(--ink);border:1.5px solid var(--dropout);border-radius:8px;padding:20px}
+.modal h3{font-family:var(--f-display);font-weight:700;font-size:1.3rem;margin:0 0 8px}
+.modal p{margin:0 0 6px;color:var(--muted)}
+.modal .btns{justify-content:flex-end;margin-top:16px}
+
+/* result view */
+.score{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 32px;background:var(--sheet);border:1.5px solid var(--dropout);border-radius:8px;padding:18px 20px;margin-top:16px}
+.big{font-family:var(--f-mono);font-weight:600;font-size:clamp(3.4rem,12vw,5.2rem);line-height:.9;font-variant-numeric:tabular-nums}
+.big .of{font-size:.42em;color:var(--muted)}
+.score-meta{display:flex;flex-direction:column;gap:8px;min-width:0}
+.chip{display:inline-flex;align-items:center;gap:6px;width:fit-content;padding:3px 10px;border-radius:999px;font-family:var(--f-display);font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
+.chip.pass{background:var(--ok-soft);color:var(--ok)}
+.chip.fail{background:var(--bad-soft);color:var(--bad)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.pct{font-family:var(--f-mono);font-size:1.05rem}
+.tallies{display:flex;flex-wrap:wrap;gap:12px 26px;margin-left:auto}
+.tally .v{font-family:var(--f-mono);font-weight:600;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.tally .v.ok{color:var(--ok)}
+.tally .v.bad{color:var(--bad)}
+.tally .l{font-size:.85rem;color:var(--muted)}
+@media (max-width:620px){.tallies{margin-left:0}}
+
+.two{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.two{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
+.panel{background:var(--sheet);border:1.5px solid var(--rule);border-radius:8px;padding:6px 18px}
+.chap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:14px 0;border-top:1px solid var(--rule)}
+.chap:first-child{border-top:0}
+.chap-n{font-family:var(--f-display);font-weight:700;font-size:1.03rem;line-height:1.25}
+.chap-n .c{font-family:var(--f-mono);font-weight:600;color:var(--dropout);margin-right:6px}
+.chap-r{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-weight:600;font-size:.95rem;font-variant-numeric:tabular-nums}
+.cells{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px}
+.cell{width:32px;height:26px;border-radius:4px;display:grid;place-items:center;padding:0;font-family:var(--f-mono);font-weight:600;font-size:.68rem;border:1.5px solid transparent}
+.cell.ok{background:var(--ok-soft);color:var(--ok);border-color:var(--ok)}
+.cell.bad{background:var(--bad);color:var(--sheet);border-color:var(--bad);cursor:pointer}
+.cell.blank{background:transparent;color:var(--bad);border:1.5px dashed var(--bad);cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted);padding:10px 0 12px;border-top:1px solid var(--rule)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:14px;height:12px;border-radius:3px}
+.legend .ok{background:var(--ok-soft);border:1.5px solid var(--ok)}
+.legend .bad{background:var(--bad)}
+.legend .blank{border:1.5px dashed var(--bad)}
+
+.prio{background:var(--sheet);border:1.5px solid var(--ink);border-radius:8px;padding:16px 18px}
+.prio .lbl{color:var(--ink)}
+.prio ol{margin:10px 0 0;padding-left:1.4em;display:grid;gap:14px}
+.prio .pc{font-family:var(--f-display);font-weight:700;font-size:1.05rem;line-height:1.25}
+.prio .pc .e{font-family:var(--f-mono);font-weight:600;font-size:.88rem;color:var(--bad);margin-left:6px;white-space:nowrap}
+.prio ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.prio li li{font-size:.93rem;color:var(--muted)}
+.prio li li b{font-family:var(--f-mono);font-weight:600;color:var(--ink);margin-right:4px}
+.prio li li .qs{font-family:var(--f-mono);font-size:.82rem;white-space:nowrap}
+.prio p{margin:10px 0 0}
+.klev{margin-top:14px;padding-top:12px;border-top:1px solid var(--rule);font-size:.9rem;color:var(--muted)}
+.klev b{font-family:var(--f-mono);color:var(--ink)}
+.klev p{margin:4px 0 0}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.fbtn{min-height:36px;padding:4px 14px;border-radius:999px;border:1.5px solid var(--dropout);background:transparent;color:var(--dropout);font-weight:600;font-size:.9rem;cursor:pointer}
+.fbtn[aria-pressed="true"]{background:var(--dropout);color:var(--sheet)}
+.rev{background:var(--sheet);border:1.5px solid var(--rule);border-radius:8px;margin-top:12px}
+.ritem{display:grid;grid-template-columns:48px minmax(0,1fr);gap:6px 12px;padding:12px 16px;border-top:1px solid var(--rule);scroll-margin-top:24px}
+.ritem:first-child{border-top:0}
+.ritem.hl{background:var(--band)}
+.rq{font-family:var(--f-mono);font-weight:600;color:var(--dropout);padding-top:2px}
+.rmain{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-width:0}
+.st{font-family:var(--f-display);font-weight:700;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;min-width:6.5em}
+.st.ok{color:var(--ok)}
+.st.bad,.st.blank{color:var(--bad)}
+.minis{display:flex;gap:5px}
+.mini{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--rule);display:grid;place-items:center;font-family:var(--f-mono);font-weight:600;font-size:.68rem;text-transform:uppercase;color:var(--muted)}
+.mini.right{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.mini.mine{background:var(--graphite);border-color:var(--graphite);color:var(--on-graphite)}
+.mini.mine.wrong{background:var(--bad);border-color:var(--bad);color:var(--sheet)}
+.mini.mine.right{background:var(--ok);border-color:var(--ok);color:var(--sheet)}
+.rtext{font-size:.93rem}
+.rtext b{font-family:var(--f-mono);font-weight:600}
+.rlo{grid-column:2;font-family:var(--f-mono);font-size:.78rem;color:var(--muted);overflow-wrap:anywhere}
+.empty{padding:16px;color:var(--muted);margin:0}
+.end{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+html,body{margin:0}
+img{max-width:100%}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="wrap">
+      <div class="top">
+        <span class="eyebrow" data-t="eyebrow"></span>
+      </div>
+      <h1 data-t="title"></h1>
+      <p class="lede" data-t="lede"></p>
+
+      <div class="facts">
+        <div class="fact"><div class="lbl" data-t="fQ"></div><div class="v">40</div><div class="note" data-t="fQn"></div></div>
+        <div class="fact"><div class="lbl" data-t="fT"></div><div class="v">75:00</div><div class="note" data-t="fTn"></div></div>
+        <div class="fact"><div class="lbl" data-t="fP"></div><div class="v">26/40</div><div class="note" data-t="fPn"></div></div>
+      </div>
+
+      <div class="resume" id="resume" hidden>
+        <p id="resumeTxt"></p>
+        <div class="btns">
+          <button type="button" class="btn primary" id="btnContinue" data-t="cont"></button>
+          <button type="button" class="btn danger" id="btnDiscard" data-t="discard"></button>
+        </div>
+      </div>
+
+      <div class="sh"><h2 data-t="pick"></h2></div>
+      <div class="exams" id="exams"></div>
+
+      <div class="sh"><h2 data-t="howH"></h2></div>
+      <ol class="steps">
+        <li><span class="n">1</span><p data-t="how1"></p></li>
+        <li><span class="n">2</span><p data-t="how2"></p></li>
+        <li><span class="n">3</span><p data-t="how3"></p></li>
+      </ol>
+
+      <footer class="foot">
+        <p data-t="foot1"></p>
+        <p data-t="foot2"></p>
+        <p><a href="https://istqb.org/?sdm_process_download=1&amp;download_id=3345" target="_blank" rel="noopener" data-t="syl"></a> · <a href="https://istqb.org/certifications/certified-tester-foundation-level-ctfl-v4-0" target="_blank" rel="noopener" data-t="site"></a></p>
+      </footer>
+    </div>
+  </section>
+
+  <!-- EXAM -->
+  <section id="exam" hidden>
+    <div class="bar">
+      <div class="bar-in">
+        <div class="letter" id="exLetter">A</div>
+        <div class="meter clock" id="clock"><span class="lbl" data-t="remaining"></span><span class="v" id="clockV">75:00</span></div>
+        <div class="meter count"><span class="lbl" data-t="answered"></span><span class="v" id="countV">0/40</span></div>
+        <span class="sp"></span>
+        <a class="btn" id="exPdf" href="#" target="_blank" rel="noopener"><span data-t="pdfQ"></span> ↗</a>
+        <button type="button" class="btn primary" id="btnFinishTop" data-t="finish"></button>
+      </div>
+      <div class="prog"><i id="progBar"></i></div>
+    </div>
+    <div class="wrap">
+      <div class="sheet-h">
+        <div class="title" id="exTitle"></div>
+        <p class="hint" data-t="sheetHint"></p>
+      </div>
+      <div class="sheet" id="sheet"></div>
+      <div class="after">
+        <p data-t="saved"></p>
+        <div class="btns">
+          <button type="button" class="btn quiet" id="btnHome" data-t="home"></button>
+          <button type="button" class="btn primary" id="btnFinish" data-t="finishBig"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" hidden>
+    <div class="wrap">
+      <div class="top">
+        <span class="eyebrow" id="rEyebrow"></span>
+      </div>
+      <div class="score">
+        <div class="big"><span id="rScore">0</span><span class="of">/40</span></div>
+        <div class="score-meta">
+          <span class="chip" id="rChip"></span>
+          <span class="pct" id="rPct"></span>
+          <span class="chip warn" id="rTimeout" hidden></span>
+        </div>
+        <div class="tallies">
+          <div class="tally"><div class="v ok" id="tOk">0</div><div class="l" data-t="okL"></div></div>
+          <div class="tally"><div class="v bad" id="tBad">0</div><div class="l" data-t="badL"></div></div>
+          <div class="tally"><div class="v" id="tBlank">0</div><div class="l" data-t="blankL"></div></div>
+          <div class="tally"><div class="v" id="tTime">0:00</div><div class="l" data-t="used"></div></div>
+        </div>
+      </div>
+
+      <div class="sh"><h2 data-t="whereH"></h2></div>
+      <div class="two">
+        <div class="panel">
+          <div id="chaps"></div>
+          <div class="legend">
+            <span><i class="ok"></i><span data-t="lgOk"></span></span>
+            <span><i class="bad"></i><span data-t="lgBad"></span></span>
+            <span><i class="blank"></i><span data-t="lgBlank"></span></span>
+          </div>
+        </div>
+        <div class="prio">
+          <div class="lbl" data-t="prioH"></div>
+          <div id="prio"></div>
+          <div class="klev" id="klev"></div>
+        </div>
+      </div>
+
+      <div class="sh"><h2 data-t="revH"></h2></div>
+      <div class="filters">
+        <button type="button" class="fbtn" id="fBad" aria-pressed="true"></button>
+        <button type="button" class="fbtn" id="fAll" aria-pressed="false"></button>
+      </div>
+      <div class="rev" id="rev"></div>
+
+      <div class="end">
+        <a class="btn" id="rWhy" href="#" target="_blank" rel="noopener"><span data-t="why"></span> ↗</a>
+        <button type="button" class="btn primary" id="btnRetry"></button>
+        <button type="button" class="btn" id="btnOther" data-t="other"></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="ov" id="ov" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ovH">
+      <h3 id="ovH"></h3>
+      <p id="ovP"></p>
+      <p id="ovP2"></p>
+      <div class="btns">
+        <button type="button" class="btn" id="ovNo"></button>
+        <button type="button" class="btn primary" id="ovYes"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* Answer keys from the official ISTQB CTFL v4.0 Sample Exam "Answers" documents.
+   Format per question: correct-letters:learning-objective:K-level  */
+var RAW = {
+  A:{qv:"1.7", q:3352, a:3357, k:"c:1.1.1:1 a:1.2.1:2 a:1.3.1:2 b:1.4.1:2 b:1.4.2:2 ae:1.4.5:2 b:1.5.1:2 d:1.5.2:1 d:2.1.2:1 c:2.1.3:1 d:2.1.5:2 c:2.1.6:2 a:2.2.1:2 b:2.2.3:2 a:3.1.2:2 d:3.2.1:1 b:3.2.4:2 d:3.2.5:1 c:4.1.1:2 b:4.2.1:3 a:4.2.2:3 d:4.2.3:3 d:4.2.4:3 a:4.3.1:2 d:4.3.3:2 a:4.4.1:2 c:4.4.2:2 b:4.5.2:2 a:4.5.3:3 c:5.1.2:1 ce:5.1.3:2 d:5.1.4:3 a:5.1.5:3 a:5.1.7:2 c:5.2.4:2 d:5.3.3:2 c:5.4.1:2 c:5.5.1:3 c:6.1.1:2 b:6.2.1:1"},
+  B:{qv:"1.7", q:3359, a:3365, k:"d:1.2.1:2 b:1.2.2:1 d:1.3.1:2 a:1.4.1:2 c:1.4.2:2 b:1.4.4:2 b:1.5.1:2 d:1.5.2:1 b:2.1.1:2 b:2.1.2:1 a:2.1.3:1 b:2.1.4:2 a:2.2.1:2 d:2.2.3:2 b:3.1.3:2 c:3.2.1:1 d:3.2.2:2 c:3.2.3:1 d:4.1.1:2 a:4.2.1:3 d:4.2.2:3 b:4.2.3:3 c:4.2.4:3 b:4.3.1:2 c:4.3.2:2 ae:4.4.2:2 d:4.4.3:2 b:4.5.2:2 d:4.5.3:3 a:5.1.3:2 b:5.1.4:3 b:5.1.5:3 d:5.1.7:2 c:5.2.4:2 a:5.3.1:1 a:5.3.3:2 a:5.4.1:2 b:5.5.1:3 c:6.1.1:2 a:6.2.1:1"},
+  C:{qv:"1.6", q:3369, a:3372, k:"b:1.1.1:1 c:1.1.2:2 b:1.3.1:2 be:1.4.1:2 a:1.4.3:2 c:1.4.5:2 b:1.5.2:1 a:1.5.3:2 d:2.1.2:1 d:2.1.3:1 b:2.1.5:2 c:2.1.6:2 d:2.2.1:2 b:2.2.3:2 d:3.1.3:2 a:3.2.1:1 b:3.2.4:2 b:3.2.5:1 c:4.1.1:2 a:4.2.1:3 d:4.2.2:3 d:4.2.3:3 a:4.2.4:3 c:4.3.2:2 a:4.3.3:2 b:4.4.1:2 d:4.4.3:2 b:4.5.2:2 d:4.5.3:3 a:5.1.1:2 c:5.1.4:3 a:5.1.5:3 b:5.1.6:1 d:5.1.7:2 c:5.2.3:2 b:5.3.2:2 d:5.4.1:2 b:5.5.1:3 d:6.1.1:2 d:6.2.1:1"},
+  D:{qv:"1.5", q:3376, a:3380, k:"d:1.1.1:1 c:1.2.3:2 a:1.3.1:2 b:1.4.1:2 a:1.4.3:2 d:1.4.5:2 a:1.5.2:1 b:1.5.3:2 a:2.1.2:1 a:2.1.3:1 d:2.1.4:2 b:2.1.6:2 a:2.2.2:2 b:2.3.1:2 c:3.1.1:1 c:3.1.2:2 b:3.2.2:2 b:3.2.3:1 b:4.1.1:2 be:4.2.1:3 c:4.2.2:3 a:4.2.3:3 b:4.2.4:3 c:4.3.1:2 a:4.3.3:2 c:4.4.1:2 d:4.4.2:2 d:4.5.1:2 a:4.5.3:3 bd:5.1.3:2 a:5.1.4:3 b:5.1.5:3 c:5.1.7:2 b:5.2.1:1 be:5.2.2:2 c:5.3.2:2 d:5.4.1:2 a:5.5.1:3 b:6.1.1:2 c:6.2.1:1"}
+};
+var IDS = ["A","B","C","D"];
+var DURATION = 75*60*1000;
+var PASS = 26;
+var DL = function(id){ return "https://istqb.org/?sdm_process_download=1&download_id=" + id; };
+
+function parseKey(k){
+  return k.trim().split(/\s+/).map(function(s, i){
+    var p = s.split(":");
+    var ans = p[0].split("");
+    return {
+      n: i+1, ans: ans, multi: ans.length > 1,
+      opts: ans.length > 1 ? ["a","b","c","d","e"] : ["a","b","c","d"],
+      lo: "FL-" + p[1], ch: +p[1].charAt(0), sec: p[1].split(".").slice(0,2).join("."), k: "K" + p[2]
+    };
+  });
+}
+var KEYS = {};
+IDS.forEach(function(id){ KEYS[id] = parseKey(RAW[id].k); });
+
+function grade(id, answers){
+  var items = KEYS[id].map(function(q){
+    var mine = ((answers && answers[q.n]) || []).slice().sort();
+    var st = !mine.length ? "blank" : (mine.join("") === q.ans.join("") ? "ok" : "bad");
+    return Object.assign({}, q, {mine: mine, st: st});
+  });
+  var score = items.filter(function(i){ return i.st === "ok"; }).length;
+  var chs = [1,2,3,4,5,6].map(function(c){
+    var it = items.filter(function(i){ return i.ch === c; });
+    var ok = it.filter(function(i){ return i.st === "ok"; }).length;
+    return {c: c, items: it, total: it.length, ok: ok, err: it.length - ok, rate: it.length ? ok/it.length : 1};
+  });
+  return {items: items, score: score, chs: chs};
+}
+window.__ctfl = {KEYS: KEYS, grade: grade};
+
+/* ---------- text ---------- */
+var CH = {
+  en:{1:"Fundamentals of Testing",2:"Testing Throughout the SDLC",3:"Static Testing",4:"Test Analysis and Design",5:"Managing the Test Activities",6:"Test Tools"}
+};
+var SEC = {
+  en:{"1.1":"What is Testing?","1.2":"Why is Testing Necessary?","1.3":"Testing Principles","1.4":"Test Activities, Testware and Test Roles","1.5":"Essential Skills and Good Practices","2.1":"Testing in the Context of an SDLC","2.2":"Test Levels and Test Types","2.3":"Maintenance Testing","3.1":"Static Testing Basics","3.2":"Feedback and Review Process","4.1":"Test Techniques Overview","4.2":"Black-Box Test Techniques","4.3":"White-Box Test Techniques","4.4":"Experience-based Test Techniques","4.5":"Collaboration-based Test Approaches","5.1":"Test Planning","5.2":"Risk Management","5.3":"Test Monitoring, Control and Completion","5.4":"Configuration Management","5.5":"Defect Management","6.1":"Tool Support for Testing","6.2":"Benefits and Risks of Test Automation"}
+};
+var T = {
+  en:{
+    eyebrow:"ISTQB® CTFL v4.0 · Answer sheet",
+    title:"Official CTFL sample exams A, B, C and D",
+    lede:"Open the official exam PDF, mark your answers on this sheet and, when you finish, see what you got wrong, the correct answer, and which syllabus chapters need more study.",
+    fQ:"Questions", fQn:"1 point each", fT:"Time", fTn:"60 min + 25% for candidates taking it in a non-native language", fP:"Pass mark", fPn:"26 correct, 65% of the exam",
+    pick:"Choose an exam", exam:"Exam {x}", qver:"Questions v{v}", openPdf:"Open exam (PDF)", start:"Start", cont:"Continue", discard:"Discard",
+    none:"No attempts yet in this browser.", recent:"Recent attempts:",
+    resume:"Exam {x} in progress, {m} left.",
+    howH:"How it works",
+    how1:"Open the chosen exam as a PDF. On a computer, keep the PDF next to this page. On a phone, switch between tabs: your marks are saved.",
+    how2:"Mark each answer on the sheet. Questions tagged \"Pick 2\" only score with both correct options. The flag marks questions to review before you submit.",
+    how3:"When you finish, or when the 75 minutes run out, the sheet is graded and shows your mistakes, the correct answers, and where they cluster in the syllabus.",
+    foot1:"Answer keys and learning objectives: ISTQB® Certified Tester Foundation Level, Sample Exams A (v1.7), B (v1.7), C (v1.6) and D (v1.5). © International Software Testing Qualifications Board (ISTQB®).",
+    foot2:"This page holds only the answer letters and each question's learning objective. The question text and the rationale for every option are in the official ISTQB® PDFs.",
+    syl:"CTFL v4.0.1 syllabus (PDF)", site:"Official CTFL v4.0 page",
+    remaining:"Time left", answered:"Answered", pdfQ:"Exam (PDF)", finish:"Finish",
+    sheetHint:"Tap a letter to mark it and tap again to clear it.",
+    colN:"No.", colA:"Answer", colF:"Flag",
+    choose2:"Pick 2", flag:"Flag for review", too2:"This question needs 2 answers. Clear one to change it.",
+    saved:"Your marks are saved in this browser. The clock keeps running if you leave this screen.",
+    home:"Back to start", finishBig:"Finish and grade",
+    cfH:"Finish the exam?", cfBlank:"{n} questions are blank or incomplete and count as wrong.", cfBlank1:"1 question is blank or incomplete and counts as wrong.", cfAll:"All 40 questions are marked.",
+    cfFlag:"{n} flagged for review.", cfFlag1:"1 flagged for review.", cfBack:"Keep answering", cfGo:"Finish",
+    dsH:"Discard this attempt?", dsP:"Your marks for exam {x} will be erased and the clock resets.", dsKeep:"Keep it",
+    swH:"Start exam {y}?", swP:"Exam {x}, still in progress, will be discarded.", swGo:"Start {y}",
+    resEy:"Result · Exam {x}", pass:"Pass", fail:"Below the 26 pass mark", timeout:"Time ran out",
+    okL:"correct", badL:"wrong", blankL:"blank", used:"time used",
+    whereH:"Where your mistakes are", lgOk:"Correct", lgBad:"Wrong (tap to see)", lgBlank:"Blank",
+    chHit:"{a} of {b}", focus:"Study", fine:"OK",
+    prioH:"What to study first",
+    prioIntro:"Chapters below 65%, from the one that cost the most points to the least:",
+    prioNone:"No chapter fell below 65%. Still, review these sections:",
+    perfect:"40 out of 40. Nothing to review.",
+    errN:"{n} mistakes", err1:"1 mistake", chap:"Ch. {c}",
+    kH:"Mistakes by K-level", kNote:"K3 questions are applied ones: test techniques, estimation and prioritization.",
+    revH:"Question-by-question review", fBad:"Wrong and blank ({n})", fAll:"All (40)",
+    stOk:"Correct", stBad:"Wrong", stBlank:"Blank", yours:"Yours", right:"Correct", noneMark:"none",
+    noErr:"No wrong or blank questions.",
+    why:"Rationale in the official answer key (PDF)", retry:"Retake exam {x}", other:"Choose another exam"
+  }
+};
+
+/* ---------- state ---------- */
+var LS = "ctfl-folha-v1";
+var S = (function(){ try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch(e){ return {}; } })();
+S.lang = "en";
+S.hist = S.hist || {};
+S.view = S.view || "home";
+S.filter = S.filter === "all" ? "all" : "bad";
+function save(){ try { localStorage.setItem(LS, JSON.stringify(S)); } catch(e){} }
+
+function t(key, vars){
+  var s = (T[S.lang][key] != null) ? T[S.lang][key] : key;
+  if (vars) Object.keys(vars).forEach(function(k){ s = s.split("{"+k+"}").join(vars[k]); });
+  return s;
+}
+function $(sel){ return document.querySelector(sel); }
+function pad(n){ return n < 10 ? "0"+n : ""+n; }
+function fmt(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + pad(s%60); }
+function fmtUsed(ms){ var s = Math.round(Math.max(0, ms)/1000); return Math.floor(s/60) + ":" + pad(s%60); }
+function remaining(){ return S.active ? S.active.start + DURATION - Date.now() : 0; }
+function upper(arr){ return arr.map(function(l){ return l.toUpperCase(); }).join(", "); }
+function complete(q, ans){ return ((ans && ans[q.n]) || []).length === q.ans.length; }
+
+var FLAG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 21V4h11l-2.5 4L17 12H6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+
+/* ---------- static text ---------- */
+function applyStatic(){
+  document.documentElement.lang = "en";
+  document.querySelectorAll("[data-t]").forEach(function(el){ el.textContent = t(el.getAttribute("data-t")); });
+}
+
+/* ---------- views ---------- */
+function show(view){
+  S.view = view; save();
+  ["home","exam","result"].forEach(function(v){ $("#"+v).hidden = v !== view; });
+  if (view === "home") renderHome();
+  if (view === "exam") renderExam();
+  if (view === "result") renderResult();
+  window.scrollTo(0, 0);
+}
+
+function renderHome(){
+  var a = S.active;
+  $("#resume").hidden = !a;
+  if (a) $("#resumeTxt").textContent = t("resume", {x: a.exam, m: fmt(remaining())});
+  var loc = "en-CA";
+  $("#exams").innerHTML = IDS.map(function(id){
+    var h = (S.hist[id] || []).slice(-3).reverse();
+    var hist = h.length
+      ? t("recent") + " " + h.map(function(r){
+          var d = ""; try { d = new Date(r.date).toLocaleDateString(loc, {day:"2-digit", month:"short"}); } catch(e){}
+          return '<span class="s ' + (r.score >= PASS ? "pass" : "fail") + '">' + r.score + '/40</span> <span>' + d + '</span>';
+        }).join(" · ")
+      : t("none");
+    var inProg = a && a.exam === id;
+    return '<article class="card">' +
+      '<div class="card-h"><div class="letter" aria-hidden="true">' + id + '</div><div><div class="card-t">' + t("exam", {x:id}) + '</div><div class="card-v">' + t("qver", {v: RAW[id].qv}) + '</div></div></div>' +
+      '<div class="hist">' + hist + '</div>' +
+      '<div class="stack">' +
+        '<a class="btn" href="' + DL(RAW[id].q) + '" target="_blank" rel="noopener">' + t("openPdf") + ' ↗</a>' +
+        '<button type="button" class="btn primary" data-start="' + id + '">' + (inProg ? t("cont") : t("start")) + '</button>' +
+      '</div></article>';
+  }).join("");
+}
+
+var built = null;
+function buildSheet(){
+  var key = KEYS[S.active.exam];
+  function col(from, to){
+    var rows = key.slice(from, to).map(function(q){
+      var band = Math.floor((q.n-1)/5) % 2 === 1;
+      return '<div class="row' + (band ? " band" : "") + '" id="row' + q.n + '">' +
+        '<span class="tm" aria-hidden="true"></span>' +
+        '<span class="qn">' + pad(q.n) + '</span>' +
+        '<div class="bubs" role="group" aria-label="' + q.n + '">' +
+          q.opts.map(function(l){
+            return '<button type="button" class="bub" data-n="' + q.n + '" data-l="' + l + '" aria-pressed="false" aria-label="' + q.n + l.toUpperCase() + '">' + l + '</button>';
+          }).join("") +
+          (q.multi ? '<span class="tag" id="tag' + q.n + '">' + t("choose2") + '</span>' : "") +
+        '</div>' +
+        '<button type="button" class="flag" data-flag="' + q.n + '" aria-pressed="false" title="' + t("flag") + '" aria-label="' + t("flag") + ' ' + q.n + '">' + FLAG + '</button>' +
+      '</div>';
+    }).join("");
+    return '<div class="col"><div class="colh"><span></span><span>' + t("colN") + '</span><span>' + t("colA") + '</span><span>' + t("colF") + '</span></div>' + rows + '</div>';
+  }
+  $("#sheet").innerHTML = col(0, 20) + col(20, 40);
+  built = S.active.start + ":" + S.lang;
+  key.forEach(function(q){ paintRow(q.n); });
+}
+function paintRow(n){
+  var a = S.active; if (!a) return;
+  var mine = a.answers[n] || [];
+  document.querySelectorAll('.bub[data-n="' + n + '"]').forEach(function(b){
+    b.setAttribute("aria-pressed", mine.indexOf(b.getAttribute("data-l")) > -1);
+  });
+  var f = !!a.flags[n];
+  var fb = document.querySelector('.flag[data-flag="' + n + '"]');
+  if (fb) fb.setAttribute("aria-pressed", f);
+  var row = $("#row" + n); if (row) row.classList.toggle("flagged", f);
+}
+function paintProgress(){
+  var a = S.active; if (!a) return;
+  var c = KEYS[a.exam].filter(function(q){ return complete(q, a.answers); }).length;
+  $("#countV").textContent = c + "/40";
+  $("#progBar").style.width = (c/40*100) + "%";
+}
+function renderExam(){
+  var a = S.active; if (!a) { show("home"); return; }
+  $("#exLetter").textContent = a.exam;
+  $("#exTitle").textContent = t("exam", {x: a.exam});
+  $("#exPdf").href = DL(RAW[a.exam].q);
+  if (built !== a.start + ":" + S.lang) buildSheet();
+  paintProgress(); tick();
+}
+
+var hintTimers = {};
+function pick(n, l){
+  var a = S.active; if (!a) return;
+  var q = KEYS[a.exam][n-1];
+  var cur = (a.answers[n] || []).slice();
+  if (!q.multi) {
+    cur = cur[0] === l ? [] : [l];
+  } else if (cur.indexOf(l) > -1) {
+    cur = cur.filter(function(x){ return x !== l; });
+  } else if (cur.length < 2) {
+    cur.push(l); cur.sort();
+  } else {
+    var tag = $("#tag" + n);
+    if (tag) {
+      tag.textContent = t("too2"); tag.classList.add("err");
+      clearTimeout(hintTimers[n]);
+      hintTimers[n] = setTimeout(function(){ tag.textContent = t("choose2"); tag.classList.remove("err"); }, 2600);
+    }
+    return;
+  }
+  if (cur.length) a.answers[n] = cur; else delete a.answers[n];
+  save(); paintRow(n); paintProgress();
+}
+
+function tick(){
+  if (S.view !== "exam" || !S.active) return;
+  var r = remaining();
+  if (r <= 0) { finish(true); return; }
+  $("#clockV").textContent = fmt(r);
+  var c = $("#clock");
+  c.classList.toggle("warn", r <= 10*60*1000 && r > 5*60*1000);
+  c.classList.toggle("crit", r <= 5*60*1000);
+}
+
+function startExam(id){
+  S.active = {exam: id, start: Date.now(), answers: {}, flags: {}};
+  built = null; save(); show("exam");
+}
+function finish(timedOut){
+  var a = S.active; if (!a) return;
+  closeModal();
+  var used = Math.min(Date.now() - a.start, DURATION);
+  var g = grade(a.exam, a.answers);
+  S.last = {exam: a.exam, answers: a.answers, used: used, timedOut: !!timedOut, date: Date.now()};
+  S.hist[a.exam] = (S.hist[a.exam] || []).concat([{score: g.score, date: Date.now(), used: used}]).slice(-10);
+  S.active = null; built = null; S.filter = "bad";
+  save(); show("result");
+}
+
+/* ---------- result ---------- */
+function renderResult(){
+  var L = S.last; if (!L) { show("home"); return; }
+  var g = grade(L.exam, L.answers);
+  var nBad = g.items.filter(function(i){ return i.st === "bad"; }).length;
+  var nBlank = g.items.filter(function(i){ return i.st === "blank"; }).length;
+  $("#rEyebrow").textContent = t("resEy", {x: L.exam});
+  $("#rScore").textContent = g.score;
+  var chip = $("#rChip");
+  chip.className = "chip " + (g.score >= PASS ? "pass" : "fail");
+  chip.textContent = g.score >= PASS ? t("pass") : t("fail");
+  $("#rPct").textContent = Math.round(g.score/40*1000)/10 + "%";
+  $("#rTimeout").hidden = !L.timedOut;
+  $("#rTimeout").textContent = t("timeout");
+  $("#tOk").textContent = g.score;
+  $("#tBad").textContent = nBad;
+  $("#tBlank").textContent = nBlank;
+  $("#tTime").textContent = fmtUsed(L.used);
+
+  $("#chaps").innerHTML = g.chs.map(function(c){
+    var focus = c.rate < 0.65;
+    return '<div class="chap">' +
+      '<div class="chap-n"><span class="c">' + c.c + '</span>' + CH[S.lang][c.c] + '</div>' +
+      '<div class="chap-r"><span>' + t("chHit", {a: c.ok, b: c.total}) + '</span><span class="chip ' + (focus ? "fail" : "pass") + '">' + (focus ? t("focus") : t("fine")) + '</span></div>' +
+      '<div class="cells">' + c.items.map(function(i){
+        var lab = "Q" + i.n + " · " + (i.st === "ok" ? t("stOk") : i.st === "bad" ? t("stBad") : t("stBlank"));
+        return i.st === "ok"
+          ? '<span class="cell ok" title="' + lab + '" aria-label="' + lab + '">' + i.n + '</span>'
+          : '<button type="button" class="cell ' + i.st + '" data-goto="' + i.n + '" title="' + lab + '" aria-label="' + lab + '">' + i.n + '</button>';
+      }).join("") + '</div></div>';
+  }).join("");
+
+  // study priority
+  var wrongIn = function(items){ return items.filter(function(i){ return i.st !== "ok"; }); };
+  function secList(items){
+    var m = {};
+    wrongIn(items).forEach(function(i){ (m[i.sec] = m[i.sec] || []).push(i.n); });
+    return Object.keys(m).sort(function(x, y){ return m[y].length - m[x].length || (x < y ? -1 : 1); }).map(function(s){
+      return '<li><b>' + s + '</b>' + SEC[S.lang][s] + ' <span class="qs">(' + m[s].map(function(n){ return "Q" + n; }).join(", ") + ')</span></li>';
+    }).join("");
+  }
+  var focusChs = g.chs.filter(function(c){ return c.rate < 0.65; }).sort(function(x, y){ return y.err - x.err || x.rate - y.rate || x.c - y.c; });
+  var html = "";
+  if (g.score === 40) {
+    html = '<p>' + t("perfect") + '</p>';
+  } else if (focusChs.length) {
+    html = '<p>' + t("prioIntro") + '</p><ol>' + focusChs.map(function(c){
+      return '<li><div class="pc">' + t("chap", {c: c.c}) + ' · ' + CH[S.lang][c.c] + '<span class="e">' + (c.err === 1 ? t("err1") : t("errN", {n: c.err})) + ' / ' + c.total + '</span></div><ul>' + secList(c.items) + '</ul></li>';
+    }).join("") + '</ol>';
+  } else {
+    html = '<p>' + t("prioNone") + '</p><ul style="margin-top:8px">' + secList(g.items) + '</ul>';
+  }
+  $("#prio").innerHTML = html;
+
+  var ks = ["K1","K2","K3"].map(function(k){
+    var it = g.items.filter(function(i){ return i.k === k; });
+    var e = wrongIn(it).length;
+    return k + ': <b>' + e + '</b>/' + it.length;
+  }).join(" · ");
+  $("#klev").innerHTML = '<div class="lbl">' + t("kH") + '</div><p>' + ks + '</p><p>' + t("kNote") + '</p>';
+
+  $("#fBad").textContent = t("fBad", {n: nBad + nBlank});
+  $("#fAll").textContent = t("fAll");
+  $("#fBad").setAttribute("aria-pressed", S.filter === "bad");
+  $("#fAll").setAttribute("aria-pressed", S.filter === "all");
+  renderReview(g);
+
+  $("#rWhy").href = DL(RAW[L.exam].a);
+  $("#btnRetry").textContent = t("retry", {x: L.exam});
+}
+function renderReview(g){
+  var list = S.filter === "all" ? g.items : g.items.filter(function(i){ return i.st !== "ok"; });
+  if (!list.length) { $("#rev").innerHTML = '<p class="empty">' + t("noErr") + '</p>'; return; }
+  $("#rev").innerHTML = list.map(function(i){
+    var lab = i.st === "ok" ? t("stOk") : i.st === "bad" ? t("stBad") : t("stBlank");
+    var minis = i.opts.map(function(l){
+      var isR = i.ans.indexOf(l) > -1, isM = i.mine.indexOf(l) > -1;
+      var c = "mini" + (isM ? " mine " + (isR ? "right" : "wrong") : (isR ? " right" : ""));
+      return '<span class="' + c + '">' + l + '</span>';
+    }).join("");
+    return '<div class="ritem" id="r' + i.n + '">' +
+      '<div class="rq">Q' + pad(i.n) + '</div>' +
+      '<div class="rmain"><span class="st ' + i.st + '">' + lab + '</span>' +
+        '<span class="minis" aria-hidden="true">' + minis + '</span>' +
+        '<span class="rtext">' + t("yours") + ': <b>' + (i.mine.length ? upper(i.mine) : t("noneMark")) + '</b> · ' + t("right") + ': <b>' + upper(i.ans) + '</b></span></div>' +
+      '<div class="rlo">' + i.lo + ' · ' + i.k + ' · ' + i.sec + ' ' + SEC[S.lang][i.sec] + '</div>' +
+    '</div>';
+  }).join("");
+}
+
+/* ---------- modal ---------- */
+var onYes = null;
+function openModal(o){
+  $("#ovH").textContent = o.title; $("#ovP").textContent = o.p || ""; $("#ovP2").textContent = o.p2 || "";
+  $("#ovP2").hidden = !o.p2;
+  $("#ovNo").textContent = o.no; $("#ovYes").textContent = o.yes;
+  onYes = o.onYes; $("#ov").hidden = false; $("#ovNo").focus();
+}
+function closeModal(){ $("#ov").hidden = true; onYes = null; }
+
+function askFinish(){
+  var a = S.active; if (!a) return;
+  var key = KEYS[a.exam];
+  var open = key.filter(function(q){ return !complete(q, a.answers); }).length;
+  var fl = Object.keys(a.flags).filter(function(k){ return a.flags[k]; }).length;
+  openModal({
+    title: t("cfH"),
+    p: open ? (open === 1 ? t("cfBlank1") : t("cfBlank", {n: open})) : t("cfAll"),
+    p2: fl ? (fl === 1 ? t("cfFlag1") : t("cfFlag", {n: fl})) : "",
+    no: t("cfBack"), yes: t("cfGo"),
+    onYes: function(){ finish(false); }
+  });
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", function(e){
+  var el;
+  if ((el = e.target.closest("[data-start]"))) {
+    var id = el.getAttribute("data-start");
+    if (S.active && S.active.exam === id) { show("exam"); return; }
+    if (S.active) {
+      var x = S.active.exam;
+      openModal({ title: t("swH", {y: id}), p: t("swP", {x: x}), no: t("dsKeep"), yes: t("swGo", {y: id}),
+        onYes: function(){ closeModal(); startExam(id); } });
+      return;
+    }
+    startExam(id); return;
+  }
+  if ((el = e.target.closest(".bub"))) { pick(+el.getAttribute("data-n"), el.getAttribute("data-l")); return; }
+  if ((el = e.target.closest(".flag"))) {
+    var n = +el.getAttribute("data-flag");
+    if (S.active.flags[n]) delete S.active.flags[n]; else S.active.flags[n] = true;
+    save(); paintRow(n); return;
+  }
+  if ((el = e.target.closest("[data-goto]"))) {
+    var g = +el.getAttribute("data-goto");
+    var r = $("#r" + g);
+    if (!r && S.filter !== "all") { S.filter = "all"; save(); renderResult(); r = $("#r" + g); }
+    if (r) {
+      r.scrollIntoView({behavior: "smooth", block: "center"});
+      document.querySelectorAll(".ritem.hl").forEach(function(x){ x.classList.remove("hl"); });
+      r.classList.add("hl");
+    }
+    return;
+  }
+});
+$("#btnContinue").addEventListener("click", function(){ show("exam"); });
+$("#btnDiscard").addEventListener("click", function(){
+  var x = S.active && S.active.exam;
+  openModal({ title: t("dsH"), p: t("dsP", {x: x}), no: t("dsKeep"), yes: t("discard"),
+    onYes: function(){ closeModal(); S.active = null; built = null; save(); renderHome(); } });
+});
+$("#btnHome").addEventListener("click", function(){ show("home"); });
+$("#btnFinish").addEventListener("click", askFinish);
+$("#btnFinishTop").addEventListener("click", askFinish);
+$("#ovNo").addEventListener("click", closeModal);
+$("#ovYes").addEventListener("click", function(){ if (onYes) onYes(); });
+$("#ov").addEventListener("click", function(e){ if (e.target === $("#ov")) closeModal(); });
+document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !$("#ov").hidden) closeModal(); });
+$("#fBad").addEventListener("click", function(){ S.filter = "bad"; save(); renderResult(); });
+$("#fAll").addEventListener("click", function(){ S.filter = "all"; save(); renderResult(); });
+$("#btnRetry").addEventListener("click", function(){
+  var id = S.last.exam;
+  if (S.active) { show("exam"); return; }
+  startExam(id);
+});
+$("#btnOther").addEventListener("click", function(){ show("home"); });
+
+setInterval(function(){
+  if (S.view === "exam") tick();
+  else if (S.view === "home" && S.active) {
+    if (remaining() <= 0) { finish(true); return; }
+    $("#resumeTxt").textContent = t("resume", {x: S.active.exam, m: fmt(remaining())});
+  }
+}, 500);
+
+/* ---------- boot ---------- */
+applyStatic();
+if (S.active && remaining() <= 0) { finish(true); }
+else if (S.view === "exam" && !S.active) show("home");
+else if (S.view === "result" && !S.last) show("home");
+else show(S.view);
+})();
+</script>
+</body>
+</html>
